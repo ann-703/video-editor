@@ -1,9 +1,7 @@
 # reel-pipeline
 
-I built this to edit one specific video: a 60-second reel of a day out with
-friends, ending on my kids waving at me through the window when I got home.
-It's Claude Code skills and subagents, not a demo — I use it on real footage
-of my own kids, which is exactly why it's built the way it is.
+Claude Code skills and subagents for turning a folder of raw phone/camera
+footage into a finished, captioned, face-safe social reel.
 
 Two skills and three subagents, chained together:
 
