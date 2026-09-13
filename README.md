@@ -24,6 +24,29 @@ This pipeline is opinionated about both, because getting either wrong is a
 one-way door — an unblurred child's face or a published wrong cut isn't a bug
 you patch after the fact.
 
+## What to expect
+
+This is not a "drop in footage, walk away" tool — it's an interactive
+workflow you run inside a Claude Code session, with you in the loop at
+several points on purpose:
+
+- **Time:** roughly an hour end-to-end for a ~60-90 second reel, most of it
+  waiting on face-tracking/rendering rather than active work from you.
+- **You'll be asked questions before anything is touched** — what happened,
+  what the reel should say, format, length, caption style, music direction —
+  and again after you've seen the footage, for must-include shots and how
+  any children in frame should appear.
+- **You'll be shown things, not just told things** — contact sheets before
+  cutting, a face-label gallery before blurring, caption style samples
+  rendered on your actual frames before they're applied everywhere, a
+  render to review before it's called done.
+- **Output:** an MP4 in your chosen output folder, captioned and rendered at
+  1080x1920 (or your chosen format), plus the intermediate shot list and
+  face-track files left on disk so you can see or redo any step.
+- **What it won't do on its own:** post anywhere, pick your story for you, or
+  decide a face is safe to leave unblurred without you confirming it from a
+  gallery image.
+
 ## What's in here
 
 - **`skills/import-footage/`** — sorts raw camera dumps into dated folders,
@@ -61,21 +84,43 @@ you patch after the fact.
 ## Setup
 
 These are [Claude Code](https://claude.com/claude-code) skills and
-subagents. To use them:
+subagents.
 
-1. Copy `skills/reel` and `skills/import-footage` into `~/.claude/skills/`,
-   and the three files in `agents/` into `~/.claude/agents/`.
-2. Set up a **video-engine** directory with `ffmpeg`/`ffprobe` binaries, a
-   Python virtualenv with a face-detection model (the scripts expect
-   [YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet)
-   at `facetools/yunet.onnx`), and a [Remotion](https://www.remotion.dev/)
-   project for final rendering and captions.
-3. Point the scripts at it:
-   ```bash
-   export VIDEO_ENGINE_DIR=/path/to/your/video-engine
-   ```
-4. In Claude Code, say something like *"I just imported footage, let's make
-   a reel"* — the `/reel` skill will walk through the rest.
+**1. Install the skills and agents.**
+```bash
+cp -r skills/reel skills/import-footage ~/.claude/skills/
+cp agents/*.md ~/.claude/agents/
+```
+
+**2. Set up a `video-engine` directory** — this project's local working area
+for binaries and the render pipeline, not something this repo ships for you:
+- `bin/ffmpeg` and `bin/ffprobe` (static builds are fine)
+- `facetools/.venv/` — a Python virtualenv with a face-detection model. The
+  scripts expect [YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet)
+  at `facetools/yunet.onnx`
+- `remotion-app/` — a [Remotion](https://www.remotion.dev/) project for
+  final rendering and caption overlays
+
+**3. Point the scripts at it:**
+```bash
+export VIDEO_ENGINE_DIR=/path/to/your/video-engine
+```
+
+**4. Use it.** Inside a Claude Code session, in the folder your footage
+lives in:
+```
+"I just imported footage from today, let's organize it"
+```
+walks through `/import-footage` — sorts into dated folders, checks true
+orientation, builds contact sheets for you to review. Then:
+```
+"Let's make a reel from this"
+```
+starts `/reel` — it will ask its intake questions first (do not skip past
+these, even if you're in a hurry), show you the footage and a shot list to
+approve, hand off to `face-labeler` for any tracked faces, offer caption
+style samples rendered on your real frames, and end with `music-scout`
+proposing licence-checked tracks before the final render.
 
 ## What this deliberately doesn't do
 
