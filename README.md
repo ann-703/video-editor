@@ -3,6 +3,10 @@
 Claude Code skills and subagents for turning a folder of raw phone/camera
 footage into a finished, captioned, face-safe social reel.
 
+**Before you start:** this needs ffmpeg, a face-detection model, and
+[Remotion](https://www.remotion.dev/) (for captions and the final render)
+already set up on your machine — see [Setup](#setup) below.
+
 Two skills and three subagents, chained together:
 
 ```
@@ -96,17 +100,18 @@ cp -r skills/reel skills/import-footage ~/.claude/skills/
 cp agents/*.md ~/.claude/agents/
 ```
 
-**2. Set up a `video-engine` directory.** This is your own local working
-area for binaries and the render pipeline - this repo doesn't ship it for
-you. It needs:
-- `bin/ffmpeg` and `bin/ffprobe` (static builds are fine)
-- `facetools/.venv/`, a Python virtualenv with a face-detection model. The
-  scripts expect [YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet)
-  at `facetools/yunet.onnx`
-- `remotion-app/`, a [Remotion](https://www.remotion.dev/) project for final
-  rendering and caption overlays
+**2. Have three things ready.** This repo drives them, it doesn't include
+them:
+- [ffmpeg](https://ffmpeg.org/), for cutting and rendering video
+- A face-detection model, so faces can be found and tracked before blurring
+- [Remotion](https://www.remotion.dev/), which handles the captions and the
+  final render
 
-**3. Point the scripts at it:**
+If you're not sure how to set these up, ask Claude Code to walk you through
+it once you've got the skills installed (step 1) — it can check what's
+missing and help you fill the gaps.
+
+**3. Point the scripts at where you put them:**
 ```bash
 export VIDEO_ENGINE_DIR=/path/to/your/video-engine
 ```
